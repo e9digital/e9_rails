@@ -1,4 +1,4 @@
-module E9::Helpers
+module E9Rails::Helpers
   module Translation
     extend ActiveSupport::Concern
 
