@@ -6,5 +6,6 @@ module E9Rails
   module Helpers
     autoload :Translation,           'e9_rails/helpers/translation'
     autoload :ResourceErrorMessages, 'e9_rails/helpers/resource_error_messages'
+    autoload :Title,                 'e9_rails/helpers/title'
   end
 end
