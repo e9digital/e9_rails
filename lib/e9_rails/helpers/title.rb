@@ -3,10 +3,10 @@ module E9Rails::Helpers
     extend ActiveSupport::Concern
 
     included do 
-      helper_method Helpers
+      helper HelperMethods
     end
 
-    module Helpers
+    module HelperMethods
       def site_name
         raise NotImplementedError, "You must implement a site_name helper to use the Title helpers"
       end
