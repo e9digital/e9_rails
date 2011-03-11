@@ -9,4 +9,8 @@ module E9Rails
     autoload :Title,                 'e9_rails/helpers/title'
     autoload :Pagination,            'e9_rails/helpers/pagination'
   end
+
+  module ActiveRecord
+    autoload :STI,                   'e9_rails/active_record/sti'
+  end
 end
