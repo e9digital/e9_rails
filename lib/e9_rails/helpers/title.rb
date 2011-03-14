@@ -8,14 +8,17 @@ module E9Rails::Helpers
 
     module HelperMethods
       def meta_title(title = nil, options = {})
-        [title || @_title, try(:site_name)].flatten.compact.map {|t| sanitize(t) }.join(options[:delimiter] || ' - ').html_safe
+        [
+          title || @_title,
+          respond_to?(:site_name) ? send(:site_name) : nil
+        ].flatten.compact.map {|t| sanitize(t) }.join(options[:delimiter] || ' - ').html_safe
       end
 
       def title(*args)
         options = args.extract_options!
 
         if !args.empty?
-          @_title     = args.dup
+          @_title    = args.dup
           base_title = sanitize(args.shift)
 
           options[:class] = [options[:class], 'title'].compact.join(' ')
