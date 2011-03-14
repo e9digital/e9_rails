@@ -7,7 +7,7 @@ module E9Rails::Helpers
       self.pagination_page_param = :page
 
       class_inheritable_accessor :pagination_per_page_param
-      self.pagination_page_param = :per_page
+      self.pagination_per_page_param = :per_page
 
       class_inheritable_accessor :pagination_per_page_default
       self.pagination_per_page_default = 10
@@ -22,40 +22,36 @@ module E9Rails::Helpers
 
     protected
 
-    def pagination_page_param
-      self.class.pagination_page_param
-    end
-
     def pagination_per_page
       if request.format.to_s =~ /rss/
-        self.class.pagination_per_page_default
-      else
         self.class.pagination_feed_per_page_default
+      else
+        self.class.pagination_per_page_default
       end
     end
 
     def pagination_parameters
       @pagination_parameters ||= pagination_defaults.dup.tap do |opts|
-        if page = params[pagination_page_param]
-          opts[pagination_page_param] = page
+        if page = params[self.class.pagination_page_param]
+          opts[self.class.pagination_page_param] = page
         end
 
-        if per_page = params.delete(pagination_per_page_param)
-          opts[pagination_per_page_param] = per_page
+        if per_page = params.delete(self.class.pagination_per_page_param)
+          opts[self.class.pagination_per_page_param] = per_page
         end
       end
     end
 
     def paging_page
-      pagination_parameters[pagination_page_param] || 1
+      pagination_parameters[self.class.pagination_page_param] || 1
     end
 
     def paging?
-      !!params[pagination_page_param]
+      !!params[self.class.pagination_page_param]
     end
 
     def pagination_defaults
-      { pagination_page_param => 1, :per_page => pagination_per_page }
+      { self.class.pagination_page_param => 1, self.class.pagination_per_page_param => pagination_per_page }
     end
   end
 end
