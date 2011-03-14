@@ -7,12 +7,8 @@ module E9Rails::Helpers
     end
 
     module HelperMethods
-      def site_name
-        raise NotImplementedError, "You must implement a site_name helper to use the Title helpers"
-      end
-
       def meta_title(title = nil, options = {})
-        [title || @_title, send(:site_name)].flatten.compact.map {|t| sanitize(t) }.join(options[:delimiter] || ' - ').html_safe
+        [title || @_title, try(:site_name)].flatten.compact.map {|t| sanitize(t) }.join(options[:delimiter] || ' - ').html_safe
       end
 
       def title(*args)
