@@ -1,4 +1,4 @@
-module E9::ActiveRecord
+module E9Rails::ActiveRecord
   module STI
     extend ActiveSupport::Concern
 
