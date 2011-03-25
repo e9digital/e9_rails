@@ -12,5 +12,7 @@ module E9Rails
 
   module ActiveRecord
     autoload :STI,                   'e9_rails/active_record/sti'
+    autoload :AttributeSearchable,   'e9_rails/active_record/attribute_searchable'
+    autoload :InheritableOptions,    'e9_rails/active_record/inheritable_options'
   end
 end
