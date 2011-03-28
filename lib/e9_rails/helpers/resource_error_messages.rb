@@ -23,14 +23,13 @@ module E9Rails::Helpers
           return ''
         end
 
-        messages = object.errors.map {|attribute, msg| content_tag(:li, msg) }.join
-        html     = <<-HTML
+        <<-HTML.html_safe
           <div id="errorExplanation">
-            <ul>#{messages}</ul>
+            <ul>
+              #{ object.errors.map {|attribute, msg| "<li>#{msg}</li>" }.join }
+            </ul>
           </div>
         HTML
-
-        html.html_safe
       rescue => e
         ''
       end
