@@ -19,11 +19,14 @@ module E9Rails::ActiveRecord
     end
 
     def options=(hash={})
-      write_attribute(:options, hash)
+      write_attribute(:options, hash.stringify_keys)
     end
 
     def options
-      self.class.options_class.new( (read_attribute(:options) || {}).reverse_merge(Hash[options_parameters.zip([nil])]), self)
+      opts = read_attribute(:options) || {}
+      opts.reverse_merge! Hash[options_parameters.map(&:to_s).zip([nil])]
+      
+      options_class.new(opts, self)
     end
 
     class Options < HashWithIndifferentAccess
@@ -37,6 +40,13 @@ module E9Rails::ActiveRecord
       class << self
         def name; 'Options' end
         def i18n_scope; :activerecord end
+      end
+
+      # This is for active_support, signifying that this class shouldn't be 
+      # extracted from *args as options via extract_options.  If this is NOT set,
+      # we'll get some odd errors when trying to build the form.
+      def extractable_options?
+        false
       end
 
       def initialize(hash, base)
