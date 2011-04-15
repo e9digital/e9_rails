@@ -11,6 +11,7 @@ module E9Rails
 
   module Controllers
     autoload :Orderable,             'e9_rails/controllers/orderable'
+    autoload :Sortable,              'e9_rails/controllers/sortable'
   end
 
   module Helpers
