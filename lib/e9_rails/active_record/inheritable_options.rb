@@ -7,7 +7,8 @@ module E9Rails::ActiveRecord
     extend ActiveSupport::Concern
 
     included do
-      serialize :options
+      class_inheritable_accessor :options_column
+      self.options_column = :options
 
       class_inheritable_accessor :options_parameters
       self.options_parameters = []
@@ -19,15 +20,26 @@ module E9Rails::ActiveRecord
     end
 
     def options=(hash={})
-      write_attribute(:options, hash.stringify_keys)
+      _serialize_inheritable_options_column unless _inheritable_options_column_serialized?
+      write_attribute(options_column, hash.stringify_keys)
     end
 
     def options
-      opts = read_attribute(:options) || {}
+      _serialize_inheritable_options_column unless _inheritable_options_column_serialized?
+      opts = read_attribute(options_column) || {}
       opts.reverse_merge! Hash[options_parameters.map(&:to_s).zip([nil])]
-      
       options_class.new(opts, self)
     end
+
+    protected
+
+      def _serialize_inheritable_options_column
+        self.class.serialized_attributes[options_column.to_s] = Hash
+      end
+
+      def _inheritable_options_column_serialized?
+        self.class.serialized_attributes[options_column.to_s].present?
+      end
 
     class Options < HashWithIndifferentAccess
       extend ActiveModel::Naming
