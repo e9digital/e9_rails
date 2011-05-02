@@ -9,16 +9,7 @@ module E9Rails::ActiveRecord
 
     module ClassMethods
       def subclasses
-        @_subclasses ||= begin
-          # TODO is there a simpler, existing way of finding subclass types with STI
-
-          # TODO make this work with the new arel rewrite (#map is no longer a method)
-          #klasses = arel_table.project(Arel::Distinct.new(arel_table[:type])).map {|r| r.tuple.first }
-          klasses = connection.select_values("select distinct(type) from #{table_name}")
-          klasses.map! {|k| k.constantize rescue next }
-          klasses.compact!
-          klasses
-        end
+        descendants
       end
        
       def subclasses_with_ancestor(mod)
