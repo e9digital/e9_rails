@@ -4,9 +4,10 @@ module E9Rails
   autoload :Version, 'e9_rails/version'
 
   module ActiveRecord
-    autoload :STI,                   'e9_rails/active_record/sti'
     autoload :AttributeSearchable,   'e9_rails/active_record/attribute_searchable'
     autoload :InheritableOptions,    'e9_rails/active_record/inheritable_options'
+    autoload :Initialization,        'e9_rails/active_record/initialization'
+    autoload :STI,                   'e9_rails/active_record/sti'
   end
 
   module Controllers
@@ -15,9 +16,10 @@ module E9Rails
   end
 
   module Helpers
-    autoload :Translation,           'e9_rails/helpers/translation'
-    autoload :ResourceErrorMessages, 'e9_rails/helpers/resource_error_messages'
-    autoload :Title,                 'e9_rails/helpers/title'
     autoload :Pagination,            'e9_rails/helpers/pagination'
+    autoload :ResourceErrorMessages, 'e9_rails/helpers/resource_error_messages'
+    autoload :ResourceLinks,         'e9_rails/helpers/resource_links'
+    autoload :Title,                 'e9_rails/helpers/title'
+    autoload :Translation,           'e9_rails/helpers/translation'
   end
 end
