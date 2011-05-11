@@ -7,6 +7,11 @@ module E9Rails::ActiveRecord
     extend ActiveSupport::Concern
 
     included do
+      #
+      # NOTE 
+      #
+      attribute_method_suffix "_with_inheritable_options"
+
       class_inheritable_accessor :options_column
       self.options_column = :options
 
@@ -16,16 +21,17 @@ module E9Rails::ActiveRecord
       class_inheritable_accessor :options_class
       self.options_class = Options
 
+      class_inheritable_accessor :delegate_options_methods
+      self.delegate_options_methods = false
+
       self.options_class.lookup_ancestors = lookup_ancestors
     end
 
     def options=(hash={})
-      _serialize_inheritable_options_column unless _inheritable_options_column_serialized?
       write_attribute(options_column, hash.stringify_keys)
     end
 
     def options
-      _serialize_inheritable_options_column unless _inheritable_options_column_serialized?
       opts = read_attribute(options_column) || {}
       opts.reverse_merge! Hash[options_parameters.map(&:to_s).zip([nil])]
       options_class.new(opts, self)
@@ -33,18 +39,32 @@ module E9Rails::ActiveRecord
 
     protected
 
-      def _serialize_inheritable_options_column
-        self.class.serialized_attributes[options_column.to_s] = Hash
+    module ClassMethods
+      def define_method_attribute_with_inheritable_options(attr_name)
+        initialize_inheritable_options
       end
 
-      def _inheritable_options_column_serialized?
-        self.class.serialized_attributes[options_column.to_s].present?
+      def inheritable_options_initialized?
+        serialized_attributes[self.options_column.to_s].present?
       end
+
+      def initialize_inheritable_options
+        return if inheritable_options_initialized?
+        serialized_attributes[self.options_column.to_s] = Hash
+
+        if self.delegate_options_methods
+          self.options_parameters.each do |param|
+            delegate param, "#{param}=", :to => :options
+          end
+        end
+      end
+    end
 
     class Options < HashWithIndifferentAccess
       extend ActiveModel::Naming
       extend ActiveModel::Translation
 
+      # implementation of lookup_ancestors for AM & i18n
       class_inheritable_accessor :lookup_ancestors
 
       attr_reader :base
