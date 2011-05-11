@@ -12,10 +12,26 @@ module E9Rails::Controllers
   module Sortable
     extend ActiveSupport::Concern
 
+    included do
+      class_inheritable_accessor :sortable_column
+      self.sortable_column = :position
+
+      class_inheritable_accessor :sortable_scope_proc
+      self.sortable_scope_proc = lambda {|_, scope, _| scope.order(sortable_column) }
+
+      #
+      # NOTE whatever the sortable column value, the proc will override the default.
+      #      the 'default' is only specified here to ensure that the scope is always called
+      #
+      has_scope :sortable_order, :only => :index, :default => sortable_column.to_s do |controller, scope, value|
+        sortable_scope_proc.call(controller, scope, value)
+      end
+    end
+
     def update_order(options = {}, &block)
       if params[:ids].is_a?(Array)
         pos = 0
-        params[:ids].each {|id| pos += 1; _do_position_update(id, :position => pos) }
+        params[:ids].each {|id| pos += 1; _do_position_update(id, sortable_column => pos) }
         flash[:notice] = I18n.t(:notice, :scope => :"flash.actions.update_order")
       else
         flash[:alert]  = I18n.t(:alert,  :scope => :"flash.actions.update_order")
