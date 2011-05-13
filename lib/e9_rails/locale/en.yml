@@ -1,0 +1,8 @@
+en:
+  activerecord:
+    links:
+      new: "New %{model}"
+      edit: "Edit %{model}"
+      destroy: "Delete %{model}"
+      show: "View %{model}"
+      confirm_destroy: Are you sure?  This cannot be undone.

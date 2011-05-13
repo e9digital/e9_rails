@@ -22,4 +22,13 @@ module E9Rails
     autoload :Title,                 'e9_rails/helpers/title'
     autoload :Translation,           'e9_rails/helpers/translation'
   end
+
+  class Railtie < Rails::Railtie
+    initializer 'e9_rails.append_i18n_translations' do
+      require 'active_support/i18n'
+      I18n.load_path << File.join(File.dirname(__FILE__), 'e9_rails/locale/en.yml')
+
+      Rails.logger.error(I18n.load_path)
+    end
+  end
 end
