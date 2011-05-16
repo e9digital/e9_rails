@@ -18,16 +18,20 @@ module E9Rails::Helpers
 
         path_options = options.slice!(:scope, :action, :method, :remote, :confirm, :class)
 
-        klass   = resource.is_a?(Class) ? resource : resource.class
+        klass  = resource.is_a?(Class) ? resource : resource.class
 
-        action  = options.delete(:action)
-        action  = klass == resource ? :new : (action || :show).to_sym
+        action = (options.delete(:action) || :show).to_sym
+
+        if klass == resource && ![:index, :new].member?(action)
+          action = :index
+        end
 
         scopes  = [*(options[:scope] || @route_scope), parent].compact
         path    = case action
-                  when :new;  new_polymorphic_path(scopes << klass, path_options)
-                  when :edit; edit_polymorphic_path(scopes << resource, path_options)
-                  else        polymorphic_path(scopes << resource, path_options)
+                  when :new;   new_polymorphic_path(scopes << klass, path_options)
+                  when :edit;  edit_polymorphic_path(scopes << resource, path_options)
+                  when :index; polymorphic_path(scopes << klass, path_options)
+                  else         polymorphic_path(scopes << resource, path_options)
                   end
 
         mn = klass.model_name
@@ -78,6 +82,10 @@ module E9Rails::Helpers
 
       def link_to_destroy_resource(resource, options = {})
         link_to_resource(resource, options.merge(:action => :destroy))
+      end
+
+      def link_to_collection(resource, options = {})
+        link_to_resource(resource, options.merge(:action => :index))
       end
     end
   end

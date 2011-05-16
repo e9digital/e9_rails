@@ -8,6 +8,10 @@ module E9Rails
     autoload :InheritableOptions,    'e9_rails/active_record/inheritable_options'
     autoload :Initialization,        'e9_rails/active_record/initialization'
     autoload :STI,                   'e9_rails/active_record/sti'
+
+    module Scopes
+      autoload :Times,               'e9_rails/active_record/scopes/times'
+    end
   end
 
   module Controllers
@@ -27,8 +31,6 @@ module E9Rails
     initializer 'e9_rails.append_i18n_translations' do
       require 'active_support/i18n'
       I18n.load_path << File.join(File.dirname(__FILE__), 'e9_rails/locale/en.yml')
-
-      Rails.logger.error(I18n.load_path)
     end
   end
 end

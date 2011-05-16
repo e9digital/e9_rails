@@ -12,6 +12,8 @@ module E9Rails::Controllers
       helper_method :default_ordered_dir
 
       has_scope :order, :if => :ordered_if, :default => lambda {|c| c.send(:default_ordered_on) } do |controller, scope, columns|
+        resource_class = controller.send(:resource_class)
+
         begin
           # determine the dir from params or controller default
           dir = case controller.params[:sort]
@@ -26,7 +28,7 @@ module E9Rails::Controllers
 
           columns = columns.map {|v| 
             # if column split on '.', try to constantize the parsed class
-            if v.length > 1
+            if v.length > 1 && v.last =~ /\w+/
               klass = v.first.classify.constantize rescue nil
 
               # and if it succeeds
@@ -38,9 +40,14 @@ module E9Rails::Controllers
                 scope = scope.includes(v.first.underscore.to_sym)
                 "#{klass.table_name}.#{v.last} #{dir}"
               end
-            else
-              # else we're assuming the column is on the table
-              "#{controller.send(:resource_class).table_name}.#{v.last} #{dir}"
+            elsif v.last =~ /\w+/
+              sql = ''
+
+              if resource_class.column_names.member?(v.last)
+                sql << "#{resource_class.table_name}."
+              end
+
+              sql << "#{v.last} #{dir}"
             end
           }.compact.join(', ')
 
