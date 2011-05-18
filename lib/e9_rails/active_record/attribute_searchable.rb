@@ -11,7 +11,6 @@ module E9Rails::ActiveRecord
       def attr_like_scope_condition(attr_name, string, opts = {})
         matcher = opts.delete(:matcher) || "%%%s%%"
         arel_table[attr_name].matches(matcher % string)
-
       end
 
       def any_attrs_like_scope_conditions(*args)
