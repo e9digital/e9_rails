@@ -28,16 +28,31 @@ module E9Rails::ActiveRecord
     end
 
     def options=(hash={})
-      write_attribute(options_column, hash.stringify_keys)
+      ensuring_method_attributes do
+        write_attribute(options_column, hash.stringify_keys)
+      end
     end
 
     def options
-      opts = read_attribute(options_column) || {}
-      opts.reverse_merge! Hash[options_parameters.map(&:to_s).zip([nil])]
-      options_class.new(opts, self)
+      ensuring_method_attributes do
+        opts = read_attribute(options_column) || {}
+        opts.reverse_merge! Hash[options_parameters.map(&:to_s).zip([nil])]
+        options_class.new(opts, self)
+      end
     end
 
     protected
+
+    def ensuring_method_attributes
+      yield
+    rescue
+      if !self.class.attribute_methods_generated?
+        self.class.define_attribute_methods
+        retry
+      else
+        raise $!
+      end
+    end
 
     module ClassMethods
       def define_method_attribute_with_inheritable_options(attr_name)
