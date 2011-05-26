@@ -25,9 +25,9 @@ module E9Rails::ActiveRecord
       class_inheritable_accessor :options_class
     end
 
-    def options=(hash={})
+    def options=(hash)
       ensuring_method_attributes do
-        write_options(hash)
+        write_options(hash || {})
       end
     end
 
@@ -41,8 +41,8 @@ module E9Rails::ActiveRecord
 
     protected
 
-    def write_options(hash={})
-      write_attribute(options_column, hash.stringify_keys)
+    def write_options(hash)
+      write_attribute(options_column, (hash || {}).stringify_keys)
     end
 
     def read_options
