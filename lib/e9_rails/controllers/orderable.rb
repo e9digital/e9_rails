@@ -73,7 +73,7 @@ module E9Rails::Controllers
 
     module HelperMethods
       def orderable_column_link(column, override_name = nil)
-        link_text = resource_class.human_attribute_name(override_name || column)
+        link_text = %Q[<span class="text">#{resource_class.human_attribute_name(override_name || column)}</span>].html_safe
 
         column = column.join(',') if column.is_a?(Array)
 
@@ -85,8 +85,10 @@ module E9Rails::Controllers
 
         css_classes = ["order-gfx", co, "h-#{lo}"].compact.join(' ').downcase
 
+        link_text.safe_concat tag(:span, :class => css_classes)
+
         content_tag(:div, :class => 'ordered-column') do
-          link_to(link_text, :order => column, :sort => lo).safe_concat tag(:span, :class => css_classes)
+          link_to(link_text, :order => column, :sort => lo)
         end
       end
     end
