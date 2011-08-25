@@ -4,15 +4,13 @@ module E9Rails::Helpers
 
     included do
       helper HelperMethods
-
-      unless self._helper_methods.member?(:parent)
-        def parent; end
-        protected :parent
-        helper_method :parent
-      end
     end
 
     module HelperMethods
+      def parent
+        controller.parent rescue nil
+      end
+
       def link_to_resource(resource, options = {})
         options.symbolize_keys!
 
